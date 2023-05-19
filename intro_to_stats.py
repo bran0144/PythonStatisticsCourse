@@ -143,3 +143,69 @@ upper = q3 + 1.5 * iqr
 outliers = emissions_by_country[(emissions_by_country < lower) | (emissions_by_country > upper)]
 print(outliers)
 
+# Probability
+# Exercises
+
+# Count the deals for each product
+counts = amir_deals['product'].value_counts()
+
+# Calculate probability of picking a deal with each product
+probs = counts / amir_deals['product'].count()
+print(probs)
+
+# Set random seed
+np.random.seed(24)
+
+# Sample 5 deals without replacement
+sample_without_replacement = amir_deals.sample(5)
+print(sample_without_replacement)
+
+# Set random seed
+np.random.seed(24)
+
+# Sample 5 deals with replacement
+sample_with_replacement = amir_deals.sample(5, replace=True)
+print(sample_with_replacement)
+
+# Expected value- Mean of a probability distribution
+# expected value of a rolling a fair die is 3.5 (1*1/6)+(2*1/6)+(3*1/6)... 
+
+# Probability = area
+# P(die roll) <= 2  
+# we take the area of each bar representing an outcome of 2 or less
+1/6 + 1/6 == 1/3
+
+# Discrete uniform distribution - (all have a discrete value and the same chance of happening)
+np.mean(die['number'])
+
+rolls_10 = die.sample(10, replace=True)
+rolls_10['number'].hist(bins=np.linspace(1,7,7))
+plt.show()
+
+np.mean(rolls_10['number']) == 3.0
+mean(die['number']) == 3.5
+
+# law of large numbers
+# as sample size increases, the sample mean will approach the theoretical mean
+
+# Create a histogram of restaurant_groups and show plot
+restaurant_groups['group_size'].hist(bins=[2,3,4,5,6])
+plt.show()
+
+# Create probability distribution
+size_dist = restaurant_groups['group_size'].value_counts() / restaurant_groups.shape[0]
+# Reset index and rename columns
+size_dist = size_dist.reset_index()
+size_dist.columns = ['group_size', 'prob']
+
+# Expected value
+expected_value = np.sum(size_dist['group_size'] * size_dist['prob'])
+
+# Subset groups of size 4 or more
+groups_4_or_more = size_dist[size_dist['group_size'] >= 4]
+
+# Sum the probabilities of groups_4_or_more
+prob_4_or_more = np.sum(groups_4_or_more['prob'])
+print(prob_4_or_more)
+
+
