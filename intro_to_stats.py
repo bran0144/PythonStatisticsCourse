@@ -208,4 +208,198 @@ groups_4_or_more = size_dist[size_dist['group_size'] >= 4]
 prob_4_or_more = np.sum(groups_4_or_more['prob'])
 print(prob_4_or_more)
 
+# continuous uniform distribution
+# calculate using the area under a horizontal line
+# P(4<= wait time <= 7) = 3 * 1/12 = 3/12 (25%)
 
+from scipy.stats import uniform
+
+# calculate the probability of wait time less than 7 (out of 12)
+uniform.cdf(7,0,12)
+
+# 0,12 are upper and lower limits
+# greater than use 1-
+1 - uniform.cdf(7,0,12)
+
+# calculating between 4 and 7
+uniform.cdf(7,0,12) - uniform.cdf(4,0,12)
+
+# generating random numbers according to uniform distribution
+# (min value, max value, # of random values)
+uniform.rvs(0,5,size=10)
+
+# continuous distributions need not be uniform (meaning the probably of some values may be higher than others)
+# the area underneath the distribution must still be 1
+
+# Exercises
+# Min and max wait times for back-up that happens every 30 min
+min_time = 0
+max_time = 30
+
+# Import uniform from scipy.stats
+from scipy.stats import uniform
+
+# Calculate probability of waiting less than 5 mins
+prob_less_than_5 = uniform.cdf(5, min_time, max_time)
+print(prob_less_than_5)
+
+# Calculate probability of waiting more than 5 mins
+prob_greater_than_5 = 1 - uniform.cdf(5, min_time, max_time)
+print(prob_greater_than_5)
+
+# Calculate probability of waiting 10-20 mins
+prob_between_10_and_20 = uniform.cdf(20,min_time, max_time) - uniform.cdf(10, min_time, max_time)
+print(prob_between_10_and_20)
+
+# Set random seed to 334
+np.random.seed(334)
+
+# Import uniform
+from scipy.stats import uniform
+
+# Generate 1000 wait times between 0 and 30 mins
+wait_times = uniform.rvs(0, 30, size=1000)
+
+# Create a histogram of simulated times and show plot
+plt.hist(wait_times)
+plt.show()
+
+# Binomial distribution
+# outcome with 2 possible values 
+
+from scipy.stats import binom 
+
+# binon.rvs(# of coins, probability of heads/success, size=# of trials)
+binom.rvs(1, 0.5, size=8)
+
+# returns an array of random flips (1 or 0 for each flip)
+# if we flip 8 coins 1 time:
+binom.rvs(8,0.5, size=1)
+# we get an array with 1 number for how many 1's (successes) we got
+
+# Binomial distribution
+#  - probability distribution of the number of successes in a sequence of independent trials
+# outomce here is discrete
+#  n = number of trials
+#  p = probability of success
+
+# probability of 7 heads in 10 trials
+# binon.pmf(# of heads, # of trials, probability of heads)
+binom.pmf(7,10,0.5)
+
+# probability of getting 7 or fewer heads
+binom.cdf(7, 10, 0.5)
+
+# expected value = calculated as n * p
+# if trials aren't indpendent, we can't use binomial distribution
+
+# Exercises:
+# Import binom from scipy.stats
+from scipy.stats import binom
+
+# Set random seed to 10
+np.random.seed(10)
+
+# Simulate a single deal
+print(binom.rvs(1, 0.3, size=1))
+
+# Simulate 1 week of 3 deals
+print(binom.rvs(3, 0.3, size=1))
+
+# Simulate 52 weeks of 3 deals
+deals = binom.rvs(3, 0.3, size=52)
+
+# Print mean deals won per week
+print(np.mean(deals))
+
+# Probability of closing 3 out of 3 deals
+prob_3 = binom.pmf(3, 3, 0.3)
+
+print(prob_3)
+
+# Probability of closing <= 1 deal out of 3 deals
+prob_less_than_or_equal_1 = binom.cdf(1,3, 0.3)
+
+print(prob_less_than_or_equal_1)
+
+# Probability of closing > 1 deal out of 3 deals
+prob_greater_than_1 = 1- binom.cdf(1,3,0.3)
+
+print(prob_greater_than_1)
+
+# Expected number won with 30% win rate
+won_30pct = 3 * 0.3
+print(won_30pct)
+
+# Expected number won with 25% win rate
+won_25pct = 3 * 0.25
+print(won_25pct)
+
+# Expected number won with 35% win rate
+won_35pct = 3 * 0.35
+print(won_35pct)
+
+# Normal distribution
+# symmetrical
+# area underneath =1
+# probability never hits 0
+# described by its mean and standard deviation
+# when it has a mean of 0 and std of 1, its called a standard normal distribution
+# 68% of the area is within 1 std of the mean
+# 95% falls within 2 std of the mean
+# 99.7% falls within 3 std of the mean
+
+from scipy.stats import norm 
+# what % of women are shorter than 154?
+norm.cdf(154, 161, 7)
+# (# we want, mean, std)
+# of women between 154-157 cm
+norm.cdf(157, 161, 7) - norm.cdf(154, 161, 7)
+
+# what height 90% of women are shorter than?
+norm.ppf(0.9, 161, 7)
+
+# what height are 90% of women taller than?
+norm.ppf((1-0.9), 161,7)
+
+# generating random numbers with normal dist
+norm.rvs(161,7,size=10)
+
+# Histogram of amount with 10 bins and show plot
+amir_deals['amount'].hist(bins=10)
+plt.show()
+
+# Probability of deal < 7500
+prob_less_7500 = norm.cdf(7500, 5000, 2000)
+
+print(prob_less_7500)
+
+# Probability of deal > 1000
+prob_over_1000 = 1- norm.cdf(1000, 5000, 2000)
+
+print(prob_over_1000)
+
+# Probability of deal between 3000 and 7000
+prob_3000_to_7000 = norm.cdf(7000, 5000, 2000) - norm.cdf(3000, 5000, 2000)
+
+print(prob_3000_to_7000)
+
+# Calculate amount that 25% of deals will be less than
+pct_25 = norm.ppf(.25, 5000, 2000)
+
+print(pct_25)
+
+# Calculate new average amount
+new_mean = 5000 * 1.2
+
+# Calculate new standard deviation
+new_sd = 2000 * 1.3
+
+# Simulate 36 new sales
+new_sales = norm.rvs(new_mean, new_sd, size=36)
+
+# Create histogram and show
+plt.hist(new_sales)
+plt.show()
+
+# Central Limit Theore
