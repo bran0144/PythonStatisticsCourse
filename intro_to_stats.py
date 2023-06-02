@@ -402,4 +402,203 @@ new_sales = norm.rvs(new_mean, new_sd, size=36)
 plt.hist(new_sales)
 plt.show()
 
-# Central Limit Theore
+# Central Limit Theorem
+die = pd.Series([1,2,3,4,5,6])
+samp_5 = die.sample(5, replace=True)
+print(samp_5)
+
+np.mean(samp_5)
+
+# Rolling the dice 5 times with 10 trials
+sample_means  = []
+for i in range(10):
+    samp_5 = die.sample(5, replace=True)
+    sample_means.append(np.mean(samp_5))
+
+print(sample_means)
+# Sampling Distribution
+# this one is a sample distribution of the sample mean
+
+# 100 times
+sample_means  = []
+for i in range(100):
+    sample_means.append(np.mean(die.sample(5, replace=True)))
+
+# the more samples you do, the more closely it will resemble the normal distribution (assuming it is normally distributed)
+
+# central limit theorem:
+# the sampling distribution of a statistic becomes closer to the normal distribution as the number of trials increases
+# only applies when samples are taken randomly and independently (with replacement)
+# also works for stadard deviation
+
+sample_sds = []
+for i in range(1000):
+    sample_sds.append(np.std(die.sample(5, replace=True)))
+
+# Also applies to proportion
+sales_team = pd.Series(["Amir", "Brian", "Claire", "Damian"])
+sales_team.sample(10, replace=True)
+
+np.mean(sample_props)
+
+# Exercises
+# Create a histogram of num_users and show
+amir_deals['num_users'].hist()
+plt.show()
+
+# Set seed to 104
+np.random.seed(104)
+
+# Sample 20 num_users with replacement from amir_deals
+samp_20 = amir_deals['num_users'].sample(20, replace=True)
+
+# Take mean of samp_20
+print(np.mean(samp_20))
+
+# Set seed to 104
+np.random.seed(104)
+
+# Sample 20 num_users with replacement from amir_deals and take mean
+samp_20 = amir_deals['num_users'].sample(20, replace=True)
+np.mean(samp_20)
+
+sample_means = []
+# Loop 100 times
+for i in range(100):
+  # Take sample of 20 num_users
+  samp_20 = amir_deals['num_users'].sample(20, replace=True)
+
+  # Calculate mean of samp_20
+  samp_20_mean = np.mean(samp_20)
+  # Append samp_20_mean to sample_means
+  sample_means.append(samp_20_mean)
+  
+print(sample_means)
+
+# Convert to Series and plot histogram
+sample_means_series = pd.Series(sample_means)
+sample_means_series.hist()
+# Show plot
+plt.show()
+
+# Set seed to 321
+np.random.seed(321)
+
+sample_means = []
+# Loop 30 times to take 30 means
+for i in range(30):
+  # Take sample of size 20 from num_users col of all_deals with replacement
+  cur_sample = all_deals['num_users'].sample(20, replace=True)
+  # Take mean of cur_sample
+  cur_mean = np.mean(cur_sample)
+  # Append cur_mean to sample_means
+  sample_means.append(cur_mean)
+
+# Print mean of sample_means
+print(np.mean(sample_means))
+
+# Print mean of num_users in amir_deals
+print(np.mean(amir_deals['num_users']))
+
+# Poisson Distribution
+# events appear to happen at a certain rate, but completely at random
+# number of people arriving at a restaurant per hour
+# $ of earthquakes per year in CA
+# time unit is irrelevant as long as its consistent
+# Probability of some # of events occurring over a fixed period of time
+# Described by a value called Lambda = average number of earthquakes in a year (also the expected value of the distribution)
+# it is a discrete distribution since we're counting events
+# distribution's peak is also at its lambda value
+# what is the probability of 5 adoptions in a week if lambda =8?
+from scipy.stats import poisson 
+poisson.pmf(5,8)
+
+# for five or fewer
+poisson.cdf(5,8)
+
+# for 5 or greater
+1 - poisson(5,8)
+
+# to take samples of poisson distributions
+poisson.rvs(8, size =10)
+
+# Exercises
+# Import poisson from scipy.stats
+from scipy.stats import poisson
+
+# Probability of 5 responses
+prob_5 = poisson.pmf(5, 4)
+
+print(prob_5)
+
+# Probability of 5 responses
+prob_coworker = poisson.pmf(5, 5.5)
+
+print(prob_coworker)
+
+# Probability of 2 or fewer responses
+prob_2_or_less = poisson.cdf(2,4)
+
+print(prob_2_or_less)
+
+# Probability of > 10 responses
+prob_over_10 = 1 - poisson.cdf(10, 4)
+
+print(prob_over_10)
+
+# More probability distributions
+
+# Exponential distribution
+
+# time unit doesn't matter as long as it is consistent
+# uses same lambda value as Poisson
+# lambda = rate in this context
+# continuous (since it represents time)
+# measures frequency in terms of time between events
+# expected value = 1/lambda
+
+# probability of waiting less than 1 minute for a new request
+from scipy.stats import expon 
+expon.cdf(1, scale=2)
+
+# we pass in 2, which is the expected value, not the lambda which is 0.5 
+
+# probability of waiting more than 4 minutes
+1 - expon.cdf(4, scale=2)
+
+# probability of waiting bewteen 1 and 4 minutes
+expon.cdf(4, scale=2) - expon.cdf(1, scale=2)
+
+# T distribution (aka student's distribution)
+
+# shape is similar to normal dist, but not quite the same
+# tails are thicker (more area under tails and area under mean is skinnier)
+# degrees of freedom affect the thickness of the tails
+# lower degrees of freedom result in thicker tails and higher std
+# as degrees of freedom increases, it looks more like the normal dist
+
+# Log normal distribution
+# log is normally distributed
+# results in distributions that are skewed
+# examples: length of chess games, adult blood pressure
+
+# Exercises:
+# Import expon from scipy.stats
+from scipy.stats import expon
+
+# Print probability response takes < 1 hour
+print(expon.cdf(1, scale=2.5))
+
+# Import expon from scipy.stats
+from scipy.stats import expon
+
+# Print probability response takes > 4 hours
+print(1- expon.cdf(4, scale=2.5))
+
+# Import expon from scipy.stats
+from scipy.stats import expon
+
+# Print probability response takes 3-4 hours
+print(expon.cdf(4, scale=2.5) - expon.cdf(3, scale=2.5))
+
+# Correlation
