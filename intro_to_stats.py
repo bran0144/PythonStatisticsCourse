@@ -601,4 +601,159 @@ from scipy.stats import expon
 # Print probability response takes 3-4 hours
 print(expon.cdf(4, scale=2.5) - expon.cdf(3, scale=2.5))
 
+# Continuous Distribution
+# Can't create individual blocks like a discrete variable
+# Use a line (flat line since all have the same probability of happening)
+# That is called a continuous uniform distribution
+# Probability of 4 <= wait time <= 7 (when wait could be between 0-12 minutes)
+# area under the line, which is 3 
+# 3 * 1/12(height of the line) = 3/12 or 25%
+
+# probability of waiting 7 minutes or less
+from scipy.stats import uniform
+uniform.cdf(7, 0, 12)
+
+# probability of waiting more than 7 mintues
+1 - uniform.cdf(7, 0, 12)
+
+# probability of waiting between 4 and 7
+uniform.cdf(7, 0, 12) - uniform.cdf(4, 0,12)
+
+# Generating random numbers using uniform distribution
+uniform.rvs(0,5, size=10)
+
+# Continuous distribution does not have to be uniform, but must = 1
+
 # Correlation
+# x= explantory/independent variable
+# y = response/dependent variable
+# correlation coefficient (between -1 and 1)
+# magnitude corresponds to the strength of the relationship
+# if coefficient is close to 0, it means that knowing the value of x, doesn't help us know the value of y
+# sign of the correlation coefficient corresponds to the direction of the relationship
+
+import seaborn as sns 
+sns.scatterplot(x="sleep_total", y="sleep_rem", data=msleep)
+plt.show()
+
+sns.lmplot(x="sleep_total", y="sleep_rem", data=msleep, ci=None)
+plt.show()
+
+# computing correlation
+msleep['sleep_total'].corr(msleep['sleep_rem'])
+
+# we use the Pearson product-moment correlation (r)
+# most common
+
+# Exercises
+# Create a scatterplot of happiness_score vs. life_exp and show
+sns.scatterplot(x="life_exp", y="happiness_score", data=world_happiness)
+
+# Show plot
+plt.show()
+
+# Create scatterplot of happiness_score vs life_exp with trendline
+sns.lmplot(x="life_exp", y="happiness_score", data=world_happiness, ci=None)
+
+# Show plot
+plt.show()
+
+# Correlation between life_exp and happiness_score
+cor = world_happiness['life_exp'].corr(world_happiness['happiness_score'])
+
+print(cor)
+
+# Caveats
+# There are non-linear relationships like a quadratic (that the corr doesn't capture)
+# You should always visualize your data when possible to see relationships
+
+# Highly skewed data (not normally distributed) may need to be transformed
+# Log transformation
+msleep['log_bodywt'] = np.log(msleep['bodywt'])
+
+sns.lmplot(x="log_bodywt", y="awake", data=msleep, ci=None)
+msleep['log_bodywt'].corr(msleep['awake'])
+
+# Other ways to transform:
+# square root transformations (sqrt(x))
+# reciprocal (1/x)
+# can do a combination of these transformations:
+  # log(x) and log(y)
+  # sqrt(x) and 1/y
+# many stats methods rely on linear relationships, so you may need to transform data to use them
+
+# Be careful of confounding or lurking variables and spurious correlations
+
+# Exercises
+# Scatterplot of gdp_per_cap and life_exp
+sns.scatterplot(x="gdp_per_cap", y="life_exp", data=world_happiness)
+
+# Show plot
+plt.show()
+
+# Correlation between gdp_per_cap and life_exp
+cor = world_happiness['gdp_per_cap'].corr(world_happiness['life_exp'])
+
+print(cor)
+
+# Scatterplot of happiness_score vs. gdp_per_cap
+sns.scatterplot(x="gdp_per_cap", y="happiness_score", data=world_happiness)
+plt.show()
+
+# Calculate correlation
+cor = world_happiness['gdp_per_cap'].corr(world_happiness['happiness_score'])
+print(cor)
+
+# Create log_gdp_per_cap column
+world_happiness['log_gdp_per_cap'] = np.log(world_happiness['gdp_per_cap'])
+
+# Scatterplot of happiness_score vs. log_gdp_per_cap
+sns.scatterplot(x="log_gdp_per_cap", y="happiness_score", data=world_happiness)
+plt.show()
+
+# Calculate correlation
+cor = world_happiness['log_gdp_per_cap'].corr(world_happiness['happiness_score'])
+print(cor)
+
+# Scatterplot of grams_sugar_per_day and happiness_score
+sns.scatterplot(x="grams_sugar_per_day", y="happiness_score", data=world_happiness)
+plt.show()
+
+# Correlation between grams_sugar_per_day and happiness_score
+cor = world_happiness['grams_sugar_per_day'].corr(world_happiness['happiness_score'])
+print(cor)
+
+# Experiment design
+# What is the effect of the treatment on the response?
+# treatment=explanatory/independent variable
+# response = dependent variable
+
+# Controlled experiments
+# participants are randomly assigned to either treatment or control group (does not recieve treatment)
+# example: A/B tests
+# groups in each need to be comparable or there may be confounding or bias
+
+# To try to prevent this:
+  # randomized controlled trial
+  # placebo - something that resembles the treatment but has no effect
+  # participants will not know which group they're in
+  # common in drug clinical trials
+  # double blind - the person runing hte experiment also doesn't know if the treatment is real or placebo
+  # prevents bias in response and analysis of results
+
+# Observational studies
+  # participants are not assigned randomly to groups
+  # participants assign themselves, usually based on preexisting characteristics
+  # for questions not conducive to a controlled experiment
+  # can't establish causation, only association
+  # need to be careful of confounding factors
+  # ways to control for those factors
+
+# Longitudinal vs. cross-sectional studies
+# Longitudual - same participants followed over a period of time
+# cross-sectional - single snaphot in time - cheaper faster more convenient than longitudinal
+
+
+
+
+
