@@ -1,0 +1,250 @@
+# Parallel slopes linear regression
+
+# when using one explanatory variable at a time
+from statsmodels.formula.api import ols 
+mdl_mass_vs_length = ols("mass_g ~ length_cm", data=fish).fit()
+# response variable on left, explanatory variable on right
+
+# using categorical variable
+mdl_mass_vs_species = ols("mass_g ~ species + 0", data=fish).fit()
+
+# Both variables at the same time
+mdl_mass_vs_both = ols("mass_g ~ length_cm + species + 0", data=fish).fit()
+
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+
+sns.reglot(x="length_cm", y="mass_g", data=fish, ci=None)
+plt.show()
+
+sns.boxplot(x="species", y="mass_g", data=fish, showmeans=True)
+
+coeffs = mdl_mass_vs_both.params 
+ic_bream, ic_perch, ic_pike, ic_roach, sl = coeffs
+
+sns.scatterplot(x="length_cm", y="mass_g", hue="species", data=fish)
+
+plt.axline(xy1=(0, ic_bream), slope=sl, color="blue")
+plt.axline(xy1=(0, ic_perch), slope=sl, color="green")
+plt.axline(xy1=(0, ic_pike), slope=sl, color="red")
+plt.axline(xy1=(0, ic_roach), slope=sl, color="orange")
+
+# Exercises
+
+# Import ols from statsmodels.formula.api
+from statsmodels.formula.api import ols
+
+# Fit a linear regression of price_twd_msq vs. n_convenience
+mdl_price_vs_conv = ols("price_twd_msq ~ n_convenience", data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_conv.params)
+
+# Import ols from statsmodels.formula.api
+from statsmodels.formula.api import ols
+
+# Fit a linear regression of price_twd_msq vs. n_convenience
+mdl_price_vs_conv = ols("price_twd_msq ~ n_convenience",
+                        data=taiwan_real_estate).fit()
+
+# Fit a linear regression of price_twd_msq vs. house_age_years, no intercept
+mdl_price_vs_age = ols("price_twd_msq ~ house_age_years + 0",
+                        data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_age.params)
+
+# Import ols from statsmodels.formula.api
+from statsmodels.formula.api import ols
+
+# Fit a linear regression of price_twd_msq vs. n_convenience
+mdl_price_vs_conv = ols("price_twd_msq ~ n_convenience",
+                        data=taiwan_real_estate).fit()
+
+# Fit a linear regression of price_twd_msq vs. house_age_years, no intercept
+mdl_price_vs_age = ols("price_twd_msq ~ house_age_years + 0", data=taiwan_real_estate).fit()
+
+# Fit a linear regression of price_twd_msq vs. n_convenience plus house_age_years, no intercept
+mdl_price_vs_both = ols("price_twd_msq ~ n_convenience + house_age_years + 0", data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_both.params)
+
+# Import matplotlib.pyplot and seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a scatter plot with linear trend line of price_twd_msq vs. n_convenience
+sns.regplot(x="n_convenience", y="price_twd_msq", data=taiwan_real_estate, ci=None)
+
+# Show the plot
+plt.show()
+
+# Import matplotlib.pyplot and seaborn
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a boxplot of price_twd_msq vs. house_age_years
+sns.boxplot(x="house_age_years", y="price_twd_msq", data=taiwan_real_estate, showmeans=True)
+
+# Show the plot
+plt.show()
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Print coeffs
+print(coeffs)
+
+# Assign each of the coeffs
+ic_0_15, ic_15_30, ic_30_45, slope = coeffs
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Assign each of the coeffs
+ic_0_15, ic_15_30, ic_30_45, slope = coeffs
+
+# Draw a scatter plot of price_twd_msq vs. n_convenience colored by house_age_years
+sns.scatterplot(x="n_convenience", y="price_twd_msq", hue="house_age_years", data=taiwan_real_estate)
+
+# Show the plot
+plt.show()
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Assign each of the coeffs
+ic_0_15, ic_15_30, ic_30_45, slope = coeffs
+
+# Draw a scatter plot of price_twd_msq vs. n_convenience, colored by house_age_years
+sns.scatterplot(x="n_convenience",
+                y="price_twd_msq",
+                hue="house_age_years",
+                data=taiwan_real_estate)
+
+# Add three parallel lines for each category of house_age_years
+# Color the line for ic_0_15 blue
+plt.axline(xy1=(0, ic_0_15), slope=slope, color="blue")
+# Color the line for ic_15_30 orange
+plt.axline(xy1=(0, ic_15_30), slope=slope, color="orange")
+# Color the line for ic_30_45 green
+plt.axline(xy1=(0, ic_30_45), slope=slope, color="green")
+
+# Show the plot
+plt.show()
+
+# Predicting parallel slopes
+import pandas as pd 
+import numpy as np 
+expl_data_length = pd.DatatFrame({"length_cm": np.arange(5, 61, 4)})
+print(expl_data_length)
+
+# to make a df for multiple explanatory variables
+from itertools import product 
+product(["A", "B", "C"], [1,2])
+
+# returns Cartesian product of your input variables
+
+length_cm  = np.arange(5, 61, 5)
+species = fish['species'].unique()
+p = product(length_cm, species)
+
+expl_data_both = pd.DataFrame(p, columns=['length_cm', 'species'])
+predict_data_length = expl_data_length.assign(mass_g = mdl_mass_vs_length.predict(expl_data))
+
+predict_data_both = expl_data_both.assign(mass_g = mdl_mass_vs_both.predict(expl_data))
+
+plt.axline(xy1=(0, ic_bream), slope=sl, color="blue")
+plt.axline(xy1=(0, ic_perch), slope=sl, color="green")
+plt.axline(xy1=(0, ic_pike), slope=sl, color="red")
+plt.axline(xy1=(0, ic_roach), slope=sl, color="orange")
+sns.scatterplot(x="length_cm", y="mass_g", hue="species", data=fish)
+
+sns.scatterplot(x="length_cm", y="mass_g", color="black", data=prediction_data)
+
+coeffs = mdl_mass_vs_length.params 
+intercept, slope = coeffs 
+
+explanatory_data = pd.DataFrame({'length_cm': np.arange(5, 61, 5)})
+
+prediction_data = explanatory_data.assign(mass_g = intercept + slope * explanatory_data)
+
+coeffs = mdl_mass_vs_both.params 
+ic_bream, ic_perch, ic_pike, ic_roach, sl = coeffs
+
+conditions = [
+    explanatory_data['species'] == 'Bream',
+    explanatory_data['species'] == 'Perch',
+    explanatory_data['species'] == 'Pike',
+    explanatory_data['species'] == 'Roach',
+]
+choices = [ic_bream, ic_perch, ic_pike, ic_roach]
+intercept = np.select(conditions, choices)
+
+prediction_data = explanatory_data.assign(
+    intercept = np.select(conditions, choices),
+    mass_g = intercept + slope * explanatory_data['length_cm'])
+
+mdl_mass_vs_both.predict(explanatory_data)
+
+# Exercises
+
+# Create n_convenience as an array of numbers from 0 to 10
+n_convenience = [0,1,2,3,4,5,6,7,8,9,10]
+
+# Extract the unique values of house_age_years
+house_age_years = taiwan_real_estate['house_age_years'].unique()
+
+# Create p as all combinations of values of n_convenience and house_age_years
+p = product(n_convenience, house_age_years)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p, columns=['n_convenience', 'house_age_years'])
+
+print(explanatory_data)
+
+# Add predictions to the DataFrame
+prediction_data = explanatory_data.assign(price_twd_msq = mdl_price_vs_both.predict(explanatory_data))
+
+print(prediction_data)
+
+# Extract the model coefficients, coeffs
+coeffs = mdl_price_vs_both.params
+
+# Assign each of the coeffs
+ic_0_15, ic_15_30, ic_30_45, slope = coeffs
+
+# Create the parallel slopes plot
+plt.axline(xy1=(0, ic_0_15), slope=slope, color="green")
+plt.axline(xy1=(0, ic_15_30), slope=slope, color="orange")
+plt.axline(xy1=(0, ic_30_45), slope=slope, color="blue")
+sns.scatterplot(x="n_convenience",
+                y="price_twd_msq",
+                hue="house_age_years",
+                data=taiwan_real_estate)
+
+# Add the predictions in black
+sns.scatterplot(x="n_convenience", y="price_twd_msq", color="black", data=prediction_data)
+
+plt.show()
+
+# Define conditions
+conditions = [
+    explanatory_data["house_age_years"] == "0 to 15",
+    explanatory_data["house_age_years"] == "15 to 30",
+    explanatory_data["house_age_years"] == "30 to 45"]
+
+# Define choices
+choices = [ic_0_15, ic_15_30, ic_30_45]
+
+# Create array of intercepts for each house_age_year category
+intercept = np.select(conditions, choices)
+
+# Create prediction_data with columns intercept and price_twd_msq
+prediction_data = explanatory_data.assign(
+    intercept = intercept,
+    price_twd_msq = intercept + slope * explanatory_data["n_convenience"])
+
+print(prediction_data)
+
