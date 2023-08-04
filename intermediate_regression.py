@@ -248,3 +248,74 @@ prediction_data = explanatory_data.assign(
 
 print(prediction_data)
 
+# Assessing model performance
+
+# coefficient of determination (R squared) - how well line fits
+# residual standard error (RSE) - typical size of residuals
+
+print(mdl_mass_vs_length.rsquared)
+print(mdl_mass_vs_species.rsquared)
+print(mdl_mass_vs_both.rsquared)
+
+# overfitting - good for the particular dataset, but does not reflect general population
+# caused by too many explantory variables
+# adjusted coefficient of determination adds a penalty with more explanatory variables
+# rsquared_adj
+
+print(mdl_mass_vs_both.rsquared_adj)
+
+rse_length = np.sqrt(mdl_mass_vs_length.mse_resid)
+
+# Exercises
+
+# Print the coeffs of determination for mdl_price_vs_conv
+print("rsquared_conv: ", mdl_price_vs_conv.rsquared)
+print("rsquared_adj_conv: ", mdl_price_vs_conv.rsquared_adj)
+
+# Print the coeffs of determination for mdl_price_vs_age
+print("rsquared_age: ", mdl_price_vs_age.rsquared)
+print("rsquared_adj_age: ", mdl_price_vs_age.rsquared_adj)
+
+# Print the coeffs of determination for mdl_price_vs_both
+print("rsquared_both: ", mdl_price_vs_both.rsquared)
+print("rsquared_adj_both: ", mdl_price_vs_both.rsquared_adj)
+
+# Print the RSE for mdl_price_vs_conv
+print("rse_conv: ", np.sqrt(mdl_price_vs_conv.mse_resid))
+
+# Print the RSE for mdl_price_vs_conv
+print("rse_age: ", np.sqrt(mdl_price_vs_age.mse_resid))
+
+# Print RSE for mdl_price_vs_conv
+print("rse_both: ", np.sqrt(mdl_price_vs_both.mse_resid))
+
+bream = fish[fish["species"] == "Bream"]
+perch = fish[fish["species"] == "Perch"]
+pike = fish[fish["species"] == "Pike"]
+roach = fish[fish["species"] == "Roach"]
+
+mdl_bream = ols("mass_g ~ length_cm", data=bream).fit()
+print(mdl_bream.params)
+mdl_perch = ols("mass_g ~ length_cm", data=perch).fit()
+mdl_pike = ols("mass_g ~ length_cm", data=pike).fit()
+mdl_roach = ols("mass_g ~ length_cm", data=roach).fit()
+
+explanatory_data = pd.DataFrame({"length_cm": np.arange(5, 61, 5)})
+
+prediction_data_bream = explanatory_data.assign(mass_g = mdl_bream.predict(explanatory_data),
+    species="Bream")
+# do the same for all the other species
+
+prediction_data = pd.concat(prediction_data_bream, prediction_data_roach, prediction_data_perch, prediction_data_pike)
+
+sns.lmplot(x="length_cm", y="mass_g", data=fish, hue="species", ci=None)
+sns.scatterplot(x="length_cm", y="mass_g",data=prediction_data, hue="species", ci=None, legend=False)
+
+plt.show()
+
+mdl_fish = ols("mass_g ~ length_cm", data=fish).fit()
+print(mdl_fish.rsquared_adj)
+
+
+
+
