@@ -316,6 +316,263 @@ plt.show()
 mdl_fish = ols("mass_g ~ length_cm", data=fish).fit()
 print(mdl_fish.rsquared_adj)
 
+# Filter for rows where house age is 0 to 15 years
+taiwan_0_to_15 = taiwan_real_estate[taiwan_real_estate["house_age_years"] == "0 to 15"]
 
+# Filter for rows where house age is 15 to 30 years
+taiwan_15_to_30 = taiwan_real_estate[taiwan_real_estate["house_age_years"] == "15 to 30"]
 
+# Filter for rows where house age is 30 to 45 years
+taiwan_30_to_45 = taiwan_real_estate[taiwan_real_estate["house_age_years"] == "30 to 45"]
 
+# Model price vs. no. convenience stores using 0 to 15 data
+mdl_0_to_15 = ols("price_twd_msq ~ n_convenience", data=taiwan_0_to_15).fit()
+
+# Model price vs. no. convenience stores using 15 to 30 data
+mdl_15_to_30 = ols("price_twd_msq ~ n_convenience", data=taiwan_15_to_30).fit()
+
+# Model price vs. no. convenience stores using 30 to 45 data
+mdl_30_to_45 = ols("price_twd_msq ~ n_convenience", data=taiwan_30_to_45).fit()
+
+# Print the coefficients
+print(mdl_0_to_15.params)
+print(mdl_15_to_30.params)
+print(mdl_30_to_45.params)
+
+# Create explanatory_data, setting no. of conv stores from  0 to 10
+explanatory_data = pd.DataFrame({'n_convenience': np.arange(0, 11)})
+
+# Add column of predictions using "0 to 15" model and explanatory data 
+prediction_data_0_to_15 = explanatory_data.assign(price_twd_msq = mdl_0_to_15.predict(explanatory_data))
+
+# Same again, with "15 to 30"
+prediction_data_15_to_30 = explanatory_data.assign(price_twd_msq = mdl_15_to_30.predict(explanatory_data))
+
+# Same again, with "30 to 45"
+prediction_data_30_to_45 = explanatory_data.assign(price_twd_msq = mdl_30_to_45.predict(explanatory_data))
+
+print(prediction_data_0_to_15)
+print(prediction_data_15_to_30)
+print(prediction_data_30_to_45)
+
+# Plot the trend lines of price_twd_msq vs. n_convenience for each house age category
+sns.lmplot(x="n_convenience",
+           y="price_twd_msq",
+           data=taiwan_real_estate,
+           hue="house_age_years",
+           ci=None,
+           legend_out=False)
+
+# Add a scatter plot for prediction_data
+sns.scatterplot(x="n_convenience",
+                y="price_twd_msq",
+                data=prediction_data,
+                hue="house_age_years",
+                legend=False)
+
+plt.show()
+
+# Print the coeff. of determination for mdl_all_ages
+print("R-squared for mdl_all_ages: ", mdl_all_ages.rsquared)
+
+# Print the coeff. of determination for mdl_0_to_15
+print("R-squared for mdl_0_to_15: ", mdl_0_to_15.rsquared)
+
+# Print the coeff. of determination for mdl_15_to_30
+print("R-squared for mdl_15_to_30: ", mdl_15_to_30.rsquared)
+
+# Print the coeff. of determination for mdl_30_to_45
+print("R-squared for mdl_30_to_45: ", mdl_30_to_45.rsquared)
+
+# Print the RSE for mdl_all_ages
+print("RSE for mdl_all_ages: ", np.sqrt(mdl_all_ages.mse_resid))
+
+# Print the RSE for mdl_0_to_15
+print("RSE for mdl_0_to_15: ", np.sqrt(mdl_0_to_15.mse_resid))
+
+# Print the RSE for mdl_15_to_30
+print("RSE for mdl_15_to_30: ", np.sqrt(mdl_15_to_30.mse_resid))
+
+# Print the RSE for mdl_30_to_45
+print("RSE for mdl_30_to_45: ", np.sqrt(mdl_30_to_45.mse_resid))
+
+# What is an interaction?
+
+# for example, the effect of length on the expected mass is different for different species
+# i.e. length and species interact
+# the effect of one explanatory variable on the expected response changes depending on the value
+    # of another explanatory variable
+
+# No interactions
+# response ~ expl_var1 + expl_var2
+
+# with interactions (implicit) (outcome same as below)
+# response ~ expl_var1 * expl_var2
+
+# with ineractions (explicit) (outcome same as above)
+# response ~ expl_var1 * expl_var2 + expl_var1:expl_var2
+
+# Running the model
+mdl_mass_vs_both = ols("mass_g ~ length_cm * species", data=fish).fit()
+print(mdl_mass_vs_both.params)
+
+# to get easier to understand coeffecients:
+mdl_mass_vs_both_inter = ols("mass_g ~ species + species:length_cm + 0", data=fish).fit()
+print(mdl_mass_vs_both_inter.params)
+# this will return an intercept and slope coefficient for each species
+
+# Exercises
+
+# Model price vs both with an interaction using "times" syntax
+mdl_price_vs_both_inter = ols("price_twd_msq ~ n_convenience * house_age_years", data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_both_inter.params)
+
+# Model price vs. both with an interaction using "colon" syntax
+mdl_price_vs_both_inter = ols("price_twd_msq ~ n_convenience + house_age_years + n_convenience:house_age_years",
+                              data=taiwan_real_estate).fit()
+
+# Print the coefficients
+print(mdl_price_vs_both_inter.params)
+
+# Making predictions with interactions
+from itertools import product
+length_cm = np.arange(5, 61, 5)
+species = fish["species"].unique()
+p = product(length_cm, species)
+
+explanatory_data = pd.DataFrame(p, columns=["length_cm", "species"])
+prediction_data = explanatory_data.assign(mass_g = mdl_mass_vs_both_inter.predict(explanatory_data))
+
+sns.lmplot(x="length_cm", y="mass_g", data=fish, hue="species", ci=None)
+sns.scatterplot(x="length_cm", y="mass_g", data=prediction_data, hue="species")
+plt.show()
+
+# Manually calculating the predictions
+coeffs = mdl_mass_vs_both_inter.params 
+ic_bream, ic_perch, ic_pike, ic_raoch, slope_bream, slope_perch, slope_pike, slope_roach = coeffs
+
+conditions = [explanatory_data["species"] == "Bream",
+        explanatory_data["species"] == "Perch",
+        explanatory_data["species"] == "Pike",
+        explanatory_data["species"] == "Roach"]
+
+ic_choices = [ic_bream, ic_perch, ic_pike, ic_raoch]
+intercept = np.select(conditions, ic_choices)
+
+slope_choices = [slope_bream, slope_perch, slope_pike, slope_roach]
+slope = np.select(conditions, slope_choices)
+
+prediction_data = explanatory_data.assign(
+    mass_g = interecpt + slope * explanatory_data["length_cm"]
+)
+
+# Exercises
+# Create n_convenience as an array of numbers from 0 to 10
+n_convenience = np.arange(0,11)
+
+# Extract the unique values of house_age_years
+house_age_years = taiwan_real_estate["house_age_years"].unique()
+
+# Create p as all combinations of values of n_convenience and house_age_years
+p = product(n_convenience, house_age_years)
+
+# Transform p to a DataFrame and name the columns
+explanatory_data = pd.DataFrame(p, columns=["n_convenience", "house_age_years"])
+
+# Print it
+print(explanatory_data)
+
+# Add predictions to the DataFrame
+prediction_data = explanatory_data.assign(price_twd_msq = mdl_price_vs_both_inter.predict(explanatory_data))
+
+# Plot the trend lines of price_twd_msq vs. n_convenience colored by house_age_years
+sns.lmplot(x="n_convenience",
+           y="price_twd_msq",
+           data=taiwan_real_estate,
+           hue="house_age_years",
+           ci=None)
+
+# Add a scatter plot for prediction_data
+sns.scatterplot(x="n_convenience",
+                y="price_twd_msq",
+                data=prediction_data, 
+                hue="house_age_years",
+                legend=False)
+
+# Show the plot
+plt.show()
+
+# Get the coefficients from mdl_price_vs_both_inter
+coeffs = mdl_price_vs_both_inter.params
+
+# Assign each of the elements of coeffs
+ic_0_15, ic_15_30, ic_30_45, slope_0_15, slope_15_30, slope_30_45 = coeffs
+
+# Create conditions
+conditions = [
+    explanatory_data["house_age_years"] == "0 to 15",
+    explanatory_data["house_age_years"] == "15 to 30",
+    explanatory_data["house_age_years"] == "30 to 45"
+]
+
+# Create intercept_choices
+intercept_choices = [ic_0_15, ic_15_30, ic_30_45]
+
+# Create slope_choices
+slope_choices = [slope_0_15, slope_15_30, slope_30_45]
+
+# Create intercept and slope
+intercept = np.select(conditions, intercept_choices)
+slope = np.select(conditions, slope_choices)
+
+# Create prediction_data with columns intercept and price_twd_msq
+prediction_data = explanatory_data.assign(price_twd_msq = intercept + slope * explanatory_data["n_convenience"])
+
+# Print it
+print(prediction_data)
+
+# Simpson's Paradox
+# when the trend of a model on the whole dataset is very different from the trends shown by models on the
+# subsets of the dataset
+# helpful to visualize the data set first (to see trends among subsets)
+# you can't choose the best model in general - it depends on the data set and question you want to answer
+# you should be articulating a question before fitting models
+# resolving the model disagreements is messy
+# often the model with the groups is more insightful
+# or may reveal that there are other hidden explanatory variables you need to discover
+
+# Exercises
+
+# Take a glimpse at the dataset
+print(auctions.info())
+
+# Model price vs. opening bid using auctions
+mdl_price_vs_openbid = ols("price ~ openbid", data = auctions).fit()
+
+# See the result
+print(mdl_price_vs_openbid.params)
+
+# Plot the scatter plot pf price vs. openbid with a linear trend line
+sns.regplot(x="openbid", y="price", data=auctions, ci=None, scatter_kws={'alpha':0.5})
+
+# Show the plot
+plt.show()
+
+# Fit linear regression of price vs. opening bid and auction type, with an interaction, without intercept
+mdl_price_vs_both = ols("price ~ auction_type + openbid:auction_type + 0", data=auctions).fit()
+
+# See the result
+print(mdl_price_vs_both.params)
+
+# Fit linear regression of price vs. opening bid and auction type, with an interaction, without intercept
+mdl_price_vs_both = ols("price ~ auction_type + openbid:auction_type + 0", data=auctions).fit()
+
+# Using auctions, plot price vs. opening bid colored by auction type as a scatter plot with linear regr'n trend lines
+sns.lmplot(x="openbid", y="price", data=auctions, hue="auction_type", ci=None)
+
+# Show the plot
+plt.show()
+
+# Two numeric explantory variables
